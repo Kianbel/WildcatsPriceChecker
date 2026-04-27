@@ -1,0 +1,123 @@
+:root {
+    --brand-red: #d32f2f; /* Your requested color */
+    --bg-dark: #121212;
+    --text-main: #333;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    /* Using a darker overlay on the background to make the white card pop */
+    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://educationsnapshots.com/wp-content/uploads/sites/4/2024/11/canada-international-school-canteen-9-1050x750-compact.jpg');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.register-card {
+    background: rgba(255, 255, 255, 0.95); /* White card for minimized maroon */
+    padding: 40px;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.header-box h1 {
+    margin: 0;
+    color: var(--brand-red); /* Color used as accent */
+    font-weight: 800;
+    font-style: italic;
+    text-transform: uppercase;
+    font-size: 24px;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+}
+
+h2 {
+    margin: 20px 0 10px;
+    color: var(--text-main);
+    font-weight: 700;
+    font-size: 22px;
+}
+
+.alert {
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 13px;
+    text-align: center;
+}
+.error { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+.success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+
+label {
+    display: block;
+    margin-top: 15px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #666;
+    letter-spacing: 0.5px;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    border: 1.5px solid #ddd;
+    border-radius: 12px;
+    background: #f9f9f9;
+    color: #333;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--brand-red);
+    background: #fff;
+}
+
+.row { display: flex; gap: 12px; }
+.row div { flex: 1; }
+
+.btn-register {
+    width: 100%;
+    padding: 14px;
+    margin-top: 25px;
+    background-color: var(--brand-red); /* Main button uses the color */
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: opacity 0.3s, transform 0.2s;
+}
+
+.btn-register:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.signin-link {
+    margin-top: 20px;
+    font-size: 13px;
+    text-align: center;
+    color: #666;
+}
+
+.signin-link a {
+    color: var(--brand-red);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.signin-link a:hover { text-decoration: underline; }
