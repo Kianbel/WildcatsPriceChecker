@@ -7,15 +7,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $stmt = $conn->prepare("SELECT password FROM users WHERE email = ?");
+    // Select all necessary columns to populate the session[cite: 2, 5]
+    $stmt = $conn->prepare("SELECT accid, fname, lname, password, usertype FROM tbluser WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
+        
         if ($password == $row['password']) {
+            // Store user data in Session variables
+            $_SESSION['user_id'] = $row['accid'];
+            $_SESSION['user_name'] = $row['fname'] . " " . $row['lname'];
+            
+            // Convert database code ('P' or 'S') to readable display text
+            $_SESSION['user_role'] = ($row['usertype'] == 'P') ? "PERSONNEL" : "STUDENT";
+
             $message = "<div class='alert success'>Login Successful! Redirecting...</div>";
+            
+            // Use header for automatic redirection
+            header("Location: dashboard.php"); 
         } else {
             $message = "<div class='alert error'>Invalid Password.</div>";
         }

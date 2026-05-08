@@ -13,7 +13,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($pass !== $cpass) {
         $message = "<div class='alert error'>Passwords do not match!</div>";
     } else {
-        $checkEmail = $conn->prepare("SELECT email FROM users WHERE email = ?");
+        // 1. Check if email exists in tbluser[cite: 1, 5]
+        $checkEmail = $conn->prepare("SELECT email FROM tbluser WHERE email = ?");
         $checkEmail->bind_param("s", $email);
         $checkEmail->execute();
         $result = $checkEmail->get_result();
@@ -21,15 +22,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows > 0) {
             $message = "<div class='alert error'>Email already registered.</div>";
         } else {
-            $stmt = $conn->prepare("INSERT INTO users (fname, lname, email, password, usertype) VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssss", $fname, $lname, $email, $pass, $type);
-            
-            if ($stmt->execute()) {
-                $message = "<div class='alert success'>Account created! <a href='index.php'>Sign In</a></div>";
-            } else {
-                $message = "<div class='alert error'>Error: " . $conn->error . "</div>";
+            // Start a transaction to ensure both tables are updated or none at all
+            $conn->begin_transaction();
+
+            try {
+                // 2. Insert into tbluser[cite: 1, 5]
+                $stmt = $conn->prepare("INSERT INTO tbluser (fname, lname, email, password, usertype) VALUES (?, ?, ?, ?, ?)");
+                // Map "Student" to "S" and "Personnel" to "P" to match usertype varchar(1)
+                $userTypeCode = ($type == "Student") ? "S" : "P";
+                $stmt->bind_param("sssss", $fname, $lname, $email, $pass, $userTypeCode);
+                $stmt->execute();
+
+                // 3. Get the generated accid
+                $last_id = $conn->insert_id;
+
+                // 4. Insert into specific subtype table
+                if ($type == "Student") {
+                    $stmtSub = $conn->prepare("INSERT INTO tblstudent (accid) VALUES (?)");
+                } else {
+                    $stmtSub = $conn->prepare("INSERT INTO tblpersonnel (accid) VALUES (?)");
+                }
+                
+                $stmtSub->bind_param("i", $last_id);
+                $stmtSub->execute();
+
+                // Commit the transaction
+                $conn->commit();
+                
+                $message = "<div class='alert success'>Account created! <a href='login.php'>Sign In</a></div>";
+                header("Location: login.php");
+            } catch (Exception $e) {
+                // Rollback on error
+                $conn->rollback();
+                $message = "<div class='alert error'>Error: " . $e->getMessage() . "</div>";
             }
-            $stmt->close();
         }
     }
 }
