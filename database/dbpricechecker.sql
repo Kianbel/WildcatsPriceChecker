@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 27, 2026 at 06:13 AM
+-- Generation Time: May 09, 2026 at 05:40 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -29,9 +29,19 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `tblitem` (
   `itemid` int(11) NOT NULL,
+  `sid` int(11) NOT NULL,
   `itemname` varchar(255) NOT NULL,
   `price` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tblitem`
+--
+
+INSERT INTO `tblitem` (`itemid`, `sid`, `itemname`, `price`) VALUES
+(8, 1, 'Pencil', 10.50),
+(9, 1, 'Short bondpaper', 1.00),
+(10, 1, 'Long bondpaper', 1.00);
 
 -- --------------------------------------------------------
 
@@ -44,6 +54,13 @@ CREATE TABLE `tblpersonnel` (
   `accid` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `tblpersonnel`
+--
+
+INSERT INTO `tblpersonnel` (`empid`, `accid`) VALUES
+(1, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -52,8 +69,16 @@ CREATE TABLE `tblpersonnel` (
 
 CREATE TABLE `tblshop` (
   `sid` int(11) NOT NULL,
+  `empid` int(11) NOT NULL,
   `sname` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tblshop`
+--
+
+INSERT INTO `tblshop` (`sid`, `empid`, `sname`) VALUES
+(1, 1, 'School Supplies');
 
 -- --------------------------------------------------------
 
@@ -65,6 +90,13 @@ CREATE TABLE `tblstudent` (
   `studid` int(11) NOT NULL,
   `accid` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tblstudent`
+--
+
+INSERT INTO `tblstudent` (`studid`, `accid`) VALUES
+(1, 2);
 
 -- --------------------------------------------------------
 
@@ -82,6 +114,14 @@ CREATE TABLE `tbluser` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Dumping data for table `tbluser`
+--
+
+INSERT INTO `tbluser` (`accid`, `fname`, `lname`, `email`, `password`, `usertype`) VALUES
+(1, 'test', 'test', 'test@gmail.com', 'test', 'P'),
+(2, 'aaa', 'aaa', 'aaa@gmail.com', 'aaa', 'S');
+
+--
 -- Indexes for dumped tables
 --
 
@@ -89,7 +129,8 @@ CREATE TABLE `tbluser` (
 -- Indexes for table `tblitem`
 --
 ALTER TABLE `tblitem`
-  ADD PRIMARY KEY (`itemid`);
+  ADD PRIMARY KEY (`itemid`),
+  ADD KEY `fk_shop_id` (`sid`);
 
 --
 -- Indexes for table `tblpersonnel`
@@ -102,7 +143,8 @@ ALTER TABLE `tblpersonnel`
 -- Indexes for table `tblshop`
 --
 ALTER TABLE `tblshop`
-  ADD PRIMARY KEY (`sid`);
+  ADD PRIMARY KEY (`sid`),
+  ADD KEY `fk_shop_owner` (`empid`);
 
 --
 -- Indexes for table `tblstudent`
@@ -126,41 +168,53 @@ ALTER TABLE `tbluser`
 -- AUTO_INCREMENT for table `tblitem`
 --
 ALTER TABLE `tblitem`
-  MODIFY `itemid` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `itemid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `tblpersonnel`
 --
 ALTER TABLE `tblpersonnel`
-  MODIFY `empid` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `empid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `tblshop`
 --
 ALTER TABLE `tblshop`
-  MODIFY `sid` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `sid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `tblstudent`
 --
 ALTER TABLE `tblstudent`
-  MODIFY `studid` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `studid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `tbluser`
 --
 ALTER TABLE `tbluser`
-  MODIFY `accid` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `accid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables
 --
 
 --
+-- Constraints for table `tblitem`
+--
+ALTER TABLE `tblitem`
+  ADD CONSTRAINT `fk_shop_id` FOREIGN KEY (`sid`) REFERENCES `tblshop` (`sid`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `tblpersonnel`
 --
 ALTER TABLE `tblpersonnel`
   ADD CONSTRAINT `fk_userid` FOREIGN KEY (`accid`) REFERENCES `tbluser` (`accid`);
+
+--
+-- Constraints for table `tblshop`
+--
+ALTER TABLE `tblshop`
+  ADD CONSTRAINT `fk_shop_owner` FOREIGN KEY (`empid`) REFERENCES `tblpersonnel` (`empid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tblstudent`
