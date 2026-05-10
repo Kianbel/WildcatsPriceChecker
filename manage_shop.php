@@ -125,11 +125,42 @@ $itemsQuery = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$sid' ORDE
     <main class="main-content">
         <header class="hero">
             <h1 class="welcome-heading"><?php echo htmlspecialchars($sname); ?></h1>
+            
+            <?php if (!empty($shop['shop_description'])): ?>
+                <p style="opacity: 0.9; margin-top: 0.5rem; font-weight: 500; max-width: 600px;">
+                    <?php echo htmlspecialchars($shop['shop_description']); ?>
+                </p>
+            <?php endif; ?>
+
             <div class="header-actions">
-                <button onclick="openShopEditModal('<?php echo addslashes(htmlspecialchars($sname)); ?>')" class="btn btn-outline"><i class="fas fa-pen"></i> Rename Shop</button>
+                
+                <button onclick="openShopEditModal('<?php echo addslashes(htmlspecialchars($sname)); ?>')" class="btn btn-outline">
+                    <i class="fas fa-pen"></i> Rename Shop
+                </button>
+                <button onclick="openDescriptionModal('<?php echo addslashes(htmlspecialchars($shop['shop_description'] ?? '')); ?>')" class="btn btn-outline">
+                    <i class="fas fa-align-left"></i> <?php echo empty($shop['shop_description']) ? 'Add Description' : 'Edit Description'; ?>
+                </button>
                 <button onclick="openModal()" class="btn btn-white"><i class="fas fa-plus"></i> Add New Item</button>
             </div>
         </header>
+
+        <div id="shopDescriptionModal" class="modal-overlay">
+            <div class="modal-content">
+                <h3>Shop Description</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">Tell customers about your shop (e.g., location, hours, or specialties).</p>
+                <form action="process_edit_shop_description.php" method="POST">
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea name="shop_description" id="edit_shop_description" style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #f1f5f9; font-family: inherit; resize: vertical;" rows="4" placeholder="Enter shop details..."></textarea>
+                    </div>
+                    <input type="hidden" name="sid" value="<?php echo $sid; ?>">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-cancel" onclick="closeDescriptionModal()">Cancel</button>
+                        <button type="submit" class="btn btn-white" style="background:var(--primary); color:white">Save Description</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <section class="content-body">
             <div class="items-card">
@@ -208,6 +239,24 @@ $itemsQuery = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$sid' ORDE
     function closeShopEditModal() { document.getElementById('shopEditModal').style.display = 'none'; }
     window.onclick = function(e) {
         if(e.target.className === 'modal-overlay') { closeModal(); closeEditModal(); closeShopEditModal(); }
+    }
+
+    function openDescriptionModal(desc) { 
+        document.getElementById('edit_shop_description').value = desc; 
+        document.getElementById('shopDescriptionModal').style.display = 'flex'; 
+    }
+    function closeDescriptionModal() { 
+        document.getElementById('shopDescriptionModal').style.display = 'none'; 
+    }
+    
+    // Update your window.onclick to include the new modal
+    window.onclick = function(e) {
+        if(e.target.className === 'modal-overlay') { 
+            closeModal(); 
+            closeEditModal(); 
+            closeShopEditModal(); 
+            closeDescriptionModal(); 
+        }
     }
 </script>
 </body>

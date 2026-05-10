@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 09, 2026 at 05:40 PM
+-- Generation Time: May 10, 2026 at 12:51 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -59,7 +59,8 @@ CREATE TABLE `tblpersonnel` (
 --
 
 INSERT INTO `tblpersonnel` (`empid`, `accid`) VALUES
-(1, 1);
+(1, 1),
+(2, 3);
 
 -- --------------------------------------------------------
 
@@ -70,15 +71,17 @@ INSERT INTO `tblpersonnel` (`empid`, `accid`) VALUES
 CREATE TABLE `tblshop` (
   `sid` int(11) NOT NULL,
   `empid` int(11) NOT NULL,
-  `sname` varchar(255) NOT NULL
+  `sname` varchar(255) NOT NULL,
+  `shop_description` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tblshop`
 --
 
-INSERT INTO `tblshop` (`sid`, `empid`, `sname`) VALUES
-(1, 1, 'School Supplies');
+INSERT INTO `tblshop` (`sid`, `empid`, `sname`, `shop_description`) VALUES
+(1, 1, 'School Supplies', 'Essential stationery, papers, and campus gear.'),
+(3, 2, 'Coffito', 'Hot and Cold Beverages');
 
 -- --------------------------------------------------------
 
@@ -119,7 +122,8 @@ CREATE TABLE `tbluser` (
 
 INSERT INTO `tbluser` (`accid`, `fname`, `lname`, `email`, `password`, `usertype`) VALUES
 (1, 'test', 'test', 'test@gmail.com', 'test', 'P'),
-(2, 'aaa', 'aaa', 'aaa@gmail.com', 'aaa', 'S');
+(2, 'aaa', 'aaa', 'aaa@gmail.com', 'aaa', 'S'),
+(3, 'Josh', 'Shop', 'joshshop@gmail.com', '1234', 'P');
 
 --
 -- Indexes for dumped tables
@@ -168,19 +172,19 @@ ALTER TABLE `tbluser`
 -- AUTO_INCREMENT for table `tblitem`
 --
 ALTER TABLE `tblitem`
-  MODIFY `itemid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `itemid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `tblpersonnel`
 --
 ALTER TABLE `tblpersonnel`
-  MODIFY `empid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `empid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `tblshop`
 --
 ALTER TABLE `tblshop`
-  MODIFY `sid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `sid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `tblstudent`
@@ -192,7 +196,7 @@ ALTER TABLE `tblstudent`
 -- AUTO_INCREMENT for table `tbluser`
 --
 ALTER TABLE `tbluser`
-  MODIFY `accid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `accid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
