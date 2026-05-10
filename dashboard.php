@@ -17,6 +17,8 @@ $current_page = 'dashboard';
 // Initialize the shop link variable for the Hero/Grid logic
 $my_shop_link = "create_shop.php"; 
 
+$all_shops_query = mysqli_query($conn, "SELECT * FROM tblshop");
+
 // If the user is PERSONNEL, check if they already have an empid and an associated shop
 if ($user_role === 'PERSONNEL') {
     $emp_query = mysqli_query($conn, "SELECT empid FROM tblpersonnel WHERE accid = '$user_id'");
@@ -66,6 +68,8 @@ if ($user_role === 'PERSONNEL') {
             color: var(--text-main);
             line-height: 1.5;
         }
+
+        a {text-decoration: none;}
 
         .app-container { display: flex; min-height: 100vh; width: 100%; }
 
@@ -149,34 +153,34 @@ if ($user_role === 'PERSONNEL') {
             </div>
 
             <div class="shop-grid">
+    <?php 
+    if (mysqli_num_rows($all_shops_query) > 0) {
+        while ($shop = mysqli_fetch_assoc($all_shops_query)) { 
+            ?>
+            
+            <a href="view_shop.php?shop_id=<?php echo $shop['sid']; ?>" class="card-link">
                 <div class="modern-card">
-                    <div class="card-image" style="background-image: url('https://scontent.fceb6-3.fna.fbcdn.net/v/t39.30808-6/484808875_1132500665342598_8952838221900438634_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=2a1932&_nc_ohc=jeQW3t_us5QQ7kNvwGOduUC&_nc_oc=AdqweDTlWZErApcj9yomK3Tl9Mg_pbgp0MLuv-_Q9fAfmpnsRua_aBIr1PiAyTGqXw8&_nc_zt=23&_nc_ht=scontent.fceb6-3.fna&_nc_gid=eEz8Jgj6cWt-DPhv1BdmFA&_nc_ss=7b289&oh=00_Af4opJtm9zqKlgixDVRhz6eeoM1eYckm53fTzUChxKUXkQ&oe=6A032491');">
-                        <div class="card-tag">Supplies</div>
+                    <div class="card-image" style="background-image: url('https://www.clipartmax.com/png/full/2-21084_store-clipart-shop-building-clipart.png');">
+                        <div class="card-tag">Shop</div>
                     </div>
                     <div class="card-content">
-                        <h3>CIT-U School Supplies</h3>
-                        <p>Essential stationery, papers, and campus gear.</p>
+                        <h3><?php echo htmlspecialchars($shop['sname']); ?></h3>
+                        <p><?php echo htmlspecialchars($shop['shop_description'] ?? 'No description available.'); ?></p>
                         <div class="card-footer">
-                            <span>24 Items Available</span>
+                            <span>View Products</span>
                             <i class="fas fa-arrow-right"></i>
                         </div>
                     </div>
                 </div>
+            </a>
 
-                <div class="modern-card">
-                    <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=800');">
-                        <div class="card-tag">DRINKS</div>
-                    </div>
-                    <div class="card-content">
-                        <h3>Coffito</h3>
-                        <p>Premium artisanal coffee and beverages.</p>
-                        <div class="card-footer">
-                            <span>12 Items Available</span>
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <?php 
+        } 
+    } else {
+        echo "<p>No shops found in the campus yet.</p>";
+    }
+    ?>
+</div>
         </section>
     </main>
 </div>
