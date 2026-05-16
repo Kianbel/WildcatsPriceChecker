@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 10, 2026 at 12:51 PM
+-- Generation Time: May 16, 2026 at 07:03 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -46,31 +46,12 @@ INSERT INTO `tblitem` (`itemid`, `sid`, `itemname`, `price`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tblpersonnel`
---
-
-CREATE TABLE `tblpersonnel` (
-  `empid` int(11) NOT NULL,
-  `accid` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `tblpersonnel`
---
-
-INSERT INTO `tblpersonnel` (`empid`, `accid`) VALUES
-(1, 1),
-(2, 3);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `tblshop`
 --
 
 CREATE TABLE `tblshop` (
   `sid` int(11) NOT NULL,
-  `empid` int(11) NOT NULL,
+  `accid` int(11) NOT NULL,
   `sname` varchar(255) NOT NULL,
   `shop_description` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -79,27 +60,11 @@ CREATE TABLE `tblshop` (
 -- Dumping data for table `tblshop`
 --
 
-INSERT INTO `tblshop` (`sid`, `empid`, `sname`, `shop_description`) VALUES
-(1, 1, 'School Supplies', 'Essential stationery, papers, and campus gear.'),
-(3, 2, 'Coffito', 'Hot and Cold Beverages');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `tblstudent`
---
-
-CREATE TABLE `tblstudent` (
-  `studid` int(11) NOT NULL,
-  `accid` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `tblstudent`
---
-
-INSERT INTO `tblstudent` (`studid`, `accid`) VALUES
-(1, 2);
+INSERT INTO `tblshop` (`sid`, `accid`, `sname`, `shop_description`) VALUES
+(1, 1, 'School Supplies', 'Selling papers, stationeries, etc.'),
+(3, 3, 'Coffito', 'Hot and Cold Beverages'),
+(4, 4, 'Burger Shop', ''),
+(5, 5, 'Fruit Shop', 'Fruit shakes, mangoes, etc.');
 
 -- --------------------------------------------------------
 
@@ -112,18 +77,18 @@ CREATE TABLE `tbluser` (
   `fname` varchar(255) NOT NULL,
   `lname` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `usertype` varchar(1) NOT NULL
+  `password` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tbluser`
 --
 
-INSERT INTO `tbluser` (`accid`, `fname`, `lname`, `email`, `password`, `usertype`) VALUES
-(1, 'test', 'test', 'test@gmail.com', 'test', 'P'),
-(2, 'aaa', 'aaa', 'aaa@gmail.com', 'aaa', 'S'),
-(3, 'Josh', 'Shop', 'joshshop@gmail.com', '1234', 'P');
+INSERT INTO `tbluser` (`accid`, `fname`, `lname`, `email`, `password`) VALUES
+(1, 'test', 'test', 'test@gmail.com', 'test'),
+(3, 'Josh', 'Shop', 'joshshop@gmail.com', '1234'),
+(4, 't', 't', 't@gmail.com', 't'),
+(5, 'a', 'a', 'a@gmail.com', 'a');
 
 --
 -- Indexes for dumped tables
@@ -137,25 +102,11 @@ ALTER TABLE `tblitem`
   ADD KEY `fk_shop_id` (`sid`);
 
 --
--- Indexes for table `tblpersonnel`
---
-ALTER TABLE `tblpersonnel`
-  ADD PRIMARY KEY (`empid`),
-  ADD KEY `fk_userid` (`accid`);
-
---
 -- Indexes for table `tblshop`
 --
 ALTER TABLE `tblshop`
   ADD PRIMARY KEY (`sid`),
-  ADD KEY `fk_shop_owner` (`empid`);
-
---
--- Indexes for table `tblstudent`
---
-ALTER TABLE `tblstudent`
-  ADD PRIMARY KEY (`studid`),
-  ADD KEY `fk_accid` (`accid`);
+  ADD KEY `fk_shop_owner_direct` (`accid`);
 
 --
 -- Indexes for table `tbluser`
@@ -172,31 +123,19 @@ ALTER TABLE `tbluser`
 -- AUTO_INCREMENT for table `tblitem`
 --
 ALTER TABLE `tblitem`
-  MODIFY `itemid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
-
---
--- AUTO_INCREMENT for table `tblpersonnel`
---
-ALTER TABLE `tblpersonnel`
-  MODIFY `empid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `itemid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `tblshop`
 --
 ALTER TABLE `tblshop`
-  MODIFY `sid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT for table `tblstudent`
---
-ALTER TABLE `tblstudent`
-  MODIFY `studid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `sid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `tbluser`
 --
 ALTER TABLE `tbluser`
-  MODIFY `accid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `accid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
@@ -209,22 +148,10 @@ ALTER TABLE `tblitem`
   ADD CONSTRAINT `fk_shop_id` FOREIGN KEY (`sid`) REFERENCES `tblshop` (`sid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `tblpersonnel`
---
-ALTER TABLE `tblpersonnel`
-  ADD CONSTRAINT `fk_userid` FOREIGN KEY (`accid`) REFERENCES `tbluser` (`accid`);
-
---
 -- Constraints for table `tblshop`
 --
 ALTER TABLE `tblshop`
-  ADD CONSTRAINT `fk_shop_owner` FOREIGN KEY (`empid`) REFERENCES `tblpersonnel` (`empid`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `tblstudent`
---
-ALTER TABLE `tblstudent`
-  ADD CONSTRAINT `fk_accid` FOREIGN KEY (`accid`) REFERENCES `tbluser` (`accid`);
+  ADD CONSTRAINT `fk_shop_owner_direct` FOREIGN KEY (`accid`) REFERENCES `tbluser` (`accid`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
