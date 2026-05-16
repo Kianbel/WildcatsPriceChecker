@@ -133,7 +133,6 @@ $itemsQuery = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$sid' ORDE
             <?php endif; ?>
 
             <div class="header-actions">
-                
                 <button onclick="openShopEditModal('<?php echo addslashes(htmlspecialchars($sname)); ?>')" class="btn btn-outline">
                     <i class="fas fa-pen"></i> Rename Shop
                 </button>
@@ -144,25 +143,26 @@ $itemsQuery = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$sid' ORDE
             </div>
         </header>
 
-        <div id="shopDescriptionModal" class="modal-overlay">
-            <div class="modal-content">
-                <h3>Shop Description</h3>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">Tell customers about your shop (e.g., location, hours, or specialties).</p>
-                <form action="process_edit_shop_description.php" method="POST">
-                    <div class="form-group">
-                        <label>Description</label>
-                        <textarea name="shop_description" id="edit_shop_description" style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #f1f5f9; font-family: inherit; resize: vertical;" rows="4" placeholder="Enter shop details..."></textarea>
-                    </div>
-                    <input type="hidden" name="sid" value="<?php echo $sid; ?>">
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-cancel" onclick="closeDescriptionModal()">Cancel</button>
-                        <button type="submit" class="btn btn-white" style="background:var(--primary); color:white">Save Description</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
         <section class="content-body">
+            <?php if (isset($_GET['msg'])): ?>
+                <div id="statusAlert" style="padding: 15px 20px; background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; border-radius: 14px; margin-bottom: 20px; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
+                    <span>
+                        <i class="fas fa-check-circle" style="margin-right: 8px;"></i>
+                        <?php
+                            switch ($_GET['msg']) {
+                                case 'item_added': echo 'Item successfully created!'; break;
+                                case 'item_updated': echo 'Item successfully updated!'; break;
+                                case 'item_deleted': echo 'Item successfully deleted!'; break;
+                                case 'shop_updated': echo 'Shop name updated successfully!'; break;
+                                case 'description_updated': echo 'Shop description updated successfully!'; break;
+                                default: echo 'Action processed successfully.';
+                            }
+                        ?>
+                    </span>
+                    <button onclick="document.getElementById('statusAlert').style.display='none'" style="background: none; border: none; color: #0f5132; cursor: pointer; font-size: 1.2rem;"><i class="fas fa-times"></i></button>
+                </div>
+            <?php endif; ?>
+
             <div class="items-card">
                 <table>
                     <thead>
@@ -176,7 +176,12 @@ $itemsQuery = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$sid' ORDE
                                     <td class="price-tag">₱<?php echo number_format($row['price'], 2); ?></td>
                                     <td class="actions">
                                         <button onclick="openEditModal(<?php echo $row['itemid']; ?>, '<?php echo addslashes(htmlspecialchars($row['itemname'])); ?>', <?php echo $row['price']; ?>)" class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                        <a href="process_delete_item.php?id=<?php echo $row['itemid']; ?>" class="action-btn delete" onclick="return confirm('Delete this item?');"><i class="fas fa-trash"></i></a>
+                                        
+                                        <a href="process_delete_item.php?id=<?php echo $row['itemid']; ?>" 
+                                        class="action-btn delete" 
+                                        onclick="handleDeleteConfirm(event, this.href, '<?php echo addslashes(htmlspecialchars($row['itemname'])); ?>', '<?php echo number_format($row['price'], 2); ?>');">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
@@ -193,7 +198,8 @@ $itemsQuery = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$sid' ORDE
 <div id="addModal" class="modal-overlay">
     <div class="modal-content">
         <h3>New Item</h3>
-        <form action="process_add_item.php" method="POST">
+        <form action="process_add_item.php" method="POST" id="addItemForm" 
+              onsubmit="handleCustomConfirm(event, 'addItemForm', 'Add New Item', 'Are you sure you want to add <strong>' + htmlEntities(this.itemname.value) + '</strong> costing <strong>₱' + parseFloat(this.price.value).toFixed(2) + '</strong> to your shop?');">
             <div class="form-group"><label>Item Name</label><input type="text" name="itemname" placeholder="e.g. Pencil" required></div>
             <div class="form-group"><label>Price (₱)</label><input type="number" name="price" step="0.01" placeholder="e.g. 10.00" required></div>
             <input type="hidden" name="sid" value="<?php echo $sid; ?>">
@@ -205,7 +211,8 @@ $itemsQuery = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$sid' ORDE
 <div id="editModal" class="modal-overlay">
     <div class="modal-content">
         <h3>Update Item</h3>
-        <form action="process_edit_item.php" method="POST">
+        <form action="process_edit_item.php" method="POST" id="editItemForm" 
+              onsubmit="handleCustomConfirm(event, 'editItemForm', 'Update Item', 'Are you sure you want to update this item to <strong>' + htmlEntities(this.edit_itemname.value) + '</strong> with a price of <strong>₱' + parseFloat(this.edit_price.value).toFixed(2) + '</strong>?');">
             <input type="hidden" name="itemid" id="edit_itemid">
             <div class="form-group"><label>Item Name</label><input type="text" name="itemname" id="edit_itemname" required></div>
             <div class="form-group"><label>Price (₱)</label><input type="number" name="price" id="edit_price" step="0.01" required></div>
@@ -217,7 +224,8 @@ $itemsQuery = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$sid' ORDE
 <div id="shopEditModal" class="modal-overlay">
     <div class="modal-content">
         <h3>Rename Shop</h3>
-        <form action="process_edit_shop.php" method="POST">
+        <form action="process_edit_shop.php" method="POST" id="editShopForm" 
+              onsubmit="handleCustomConfirm(event, 'editShopForm', 'Rename Shop', 'Are you sure you want to change your shop name to <strong>' + htmlEntities(this.sname.value) + '</strong>?');">
             <div class="form-group"><label>New Name</label><input type="text" name="sname" id="edit_sname" required></div>
             <input type="hidden" name="sid" value="<?php echo $sid; ?>">
             <div class="modal-footer"><button type="button" class="btn btn-outline-cancel" onclick="closeShopEditModal()">Cancel</button><button type="submit" class="btn btn-white" style="background:var(--primary); color:white">Confirm</button></div>
@@ -225,9 +233,114 @@ $itemsQuery = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$sid' ORDE
     </div>
 </div>
 
+<div id="shopDescriptionModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Shop Description</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">Tell customers about your shop (e.g., location, hours, or specialties).</p>
+        <form action="process_edit_shop_description.php" method="POST" id="shopDescForm" 
+              onsubmit="handleCustomConfirm(event, 'shopDescForm', 'Update Description', 'Are you sure you want to update your shop description to:<br><br><blockquote style=\'background: #f1f5f9; padding: 15px; border-left: 4px solid var(--primary); border-radius: 12px; font-style: italic; text-align: left; max-height: 150px; overflow-y: auto; white-space: pre-wrap;\'>' + htmlEntities(document.getElementById('edit_shop_description').value) + '</blockquote>');">
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="shop_description" id="edit_shop_description" style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #f1f5f9; font-family: inherit; resize: vertical;" rows="4" placeholder="Enter shop details..."></textarea>
+            </div>
+            <input type="hidden" name="sid" value="<?php echo $sid; ?>">
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-cancel" onclick="closeDescriptionModal()">Cancel</button>
+                <button type="submit" class="btn btn-white" style="background:var(--primary); color:white">Save Description</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="customConfirmModal" class="modal-overlay" style="z-index: 2000;">
+    <div class="modal-content" style="max-width: 400px; text-align: center;">
+        <div style="font-size: 3rem; color: var(--primary); margin-bottom: 15px;">
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <h3 id="confirmTitle" style="margin-bottom: 10px;">Are you sure?</h3>
+        <p id="confirmMessage" style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px;">Do you really want to proceed?</p>
+        
+        <div class="modal-footer" style="justify-content: center; gap: 15px;">
+            <button type="button" class="btn btn-outline-cancel" id="confirmCancelBtn" style="min-width: 100px;">Cancel</button>
+            <button type="button" class="btn btn-white" id="confirmProceedBtn" style="background: var(--primary); color: white; min-width: 100px;">Confirm</button>
+        </div>
+    </div>
+</div>
+
 <script>
+    let targetFormId = null;
+    let targetDeleteUrl = null;
+    let isConfirmed = false;
+
+    // Helper function to escape HTML strings safely before injecting into innerHTML
+    function htmlEntities(str) {
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Intercepts form submissions to show custom confirmation modal
+    function handleCustomConfirm(event, formId, title, messageHtml) {
+        if (!isConfirmed) {
+            event.preventDefault(); // Stop form from submitting immediately
+            targetFormId = formId;
+            targetDeleteUrl = null; 
+            
+            document.getElementById('confirmTitle').innerText = title;
+            document.getElementById('confirmMessage').innerHTML = messageHtml;
+            
+            document.getElementById('customConfirmModal').style.display = 'flex';
+        }
+    }
+
+    // Intercepts delete link clicks with dynamic Item details
+    function handleDeleteConfirm(event, url, itemName, itemPrice) {
+        event.preventDefault(); // Stop immediate redirection
+        targetDeleteUrl = url;
+        targetFormId = null; 
+        
+        document.getElementById('confirmTitle').innerText = 'Delete Item';
+        document.getElementById('confirmMessage').innerHTML = 'Are you sure you want to permanently delete <strong>' + htmlEntities(itemName) + ' </strong> &nbsp(₱' + itemPrice + ')? &nbsp This action cannot be undone.';
+        
+        document.getElementById('customConfirmModal').style.display = 'flex';
+    }
+
+    // Close the custom confirmation modal
+    function closeCustomConfirm() {
+        document.getElementById('customConfirmModal').style.display = 'none';
+        targetFormId = null;
+        targetDeleteUrl = null;
+        isConfirmed = false;
+    }
+
+    // Executed when user clicks "Confirm" in the custom modal
+    document.getElementById('confirmProceedBtn').addEventListener('click', function() {
+        isConfirmed = true;
+        if (targetFormId) {
+            document.getElementById(targetFormId).submit();
+        } else if (targetDeleteUrl) {
+            window.location.href = targetDeleteUrl;
+        }
+        closeCustomConfirm();
+    });
+
+    document.getElementById('confirmCancelBtn').addEventListener('click', closeCustomConfirm);
+
+    // Reusable single Click outside handler
+    window.onclick = function(e) {
+        if(e.target.className === 'modal-overlay') { 
+            if (e.target.id === 'customConfirmModal') {
+                closeCustomConfirm();
+            } else {
+                closeModal(); 
+                closeEditModal(); 
+                closeShopEditModal(); 
+                closeDescriptionModal(); 
+            }
+        }
+    }
+
     function openModal() { document.getElementById('addModal').style.display = 'flex'; }
     function closeModal() { document.getElementById('addModal').style.display = 'none'; }
+    
     function openEditModal(id, name, price) {
         document.getElementById('edit_itemid').value = id;
         document.getElementById('edit_itemname').value = name;
@@ -235,11 +348,12 @@ $itemsQuery = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$sid' ORDE
         document.getElementById('editModal').style.display = 'flex';
     }
     function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
-    function openShopEditModal(name) { document.getElementById('edit_sname').value = name; document.getElementById('shopEditModal').style.display = 'flex'; }
-    function closeShopEditModal() { document.getElementById('shopEditModal').style.display = 'none'; }
-    window.onclick = function(e) {
-        if(e.target.className === 'modal-overlay') { closeModal(); closeEditModal(); closeShopEditModal(); }
+    
+    function openShopEditModal(name) { 
+        document.getElementById('edit_sname').value = name; 
+        document.getElementById('shopEditModal').style.display = 'flex'; 
     }
+    function closeShopEditModal() { document.getElementById('shopEditModal').style.display = 'none'; }
 
     function openDescriptionModal(desc) { 
         document.getElementById('edit_shop_description').value = desc; 
@@ -248,16 +362,14 @@ $itemsQuery = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$sid' ORDE
     function closeDescriptionModal() { 
         document.getElementById('shopDescriptionModal').style.display = 'none'; 
     }
-    
-    // Update your window.onclick to include the new modal
-    window.onclick = function(e) {
-        if(e.target.className === 'modal-overlay') { 
-            closeModal(); 
-            closeEditModal(); 
-            closeShopEditModal(); 
-            closeDescriptionModal(); 
+
+    // Auto-hide the success alert banner after 2 seconds
+    window.addEventListener('DOMContentLoaded', (event) => {
+        const alert = document.getElementById('statusAlert');
+        if (alert) {
+            setTimeout(() => { alert.style.display = 'none'; }, 4000);
         }
-    }
+    });
 </script>
 </body>
 </html>
