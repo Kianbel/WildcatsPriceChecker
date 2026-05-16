@@ -13,8 +13,8 @@ $user_name = $_SESSION['user_name'];
 $user_role = $_SESSION['user_role'];
 $current_page = 'manage_shop';
 
-// Fetch Shop Data
-$shopQuery = mysqli_query($conn, "SELECT * FROM tblshop WHERE empid = (SELECT empid FROM tblpersonnel WHERE accid = '$user_id') LIMIT 1");
+// Fetch Shop Data directly by referencing the account ID (accid)
+$shopQuery = mysqli_query($conn, "SELECT * FROM tblshop WHERE accid = '$user_id' LIMIT 1");
 $shop = mysqli_fetch_assoc($shopQuery);
 
 if (!$shop) {
@@ -363,7 +363,7 @@ $itemsQuery = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$sid' ORDE
         document.getElementById('shopDescriptionModal').style.display = 'none'; 
     }
 
-    // Auto-hide the success alert banner after 2 seconds
+    // Auto-hide the success alert banner after 4 seconds
     window.addEventListener('DOMContentLoaded', (event) => {
         const alert = document.getElementById('statusAlert');
         if (alert) {

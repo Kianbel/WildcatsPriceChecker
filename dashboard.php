@@ -2,35 +2,23 @@
 session_start();
 require_once 'includes/connect.php';
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
-}
+// Resolve access status: Either set explicitly using the current personnel session, or fallback safely to a Guest structure
+$user_id   = $_SESSION['user_id'] ?? 0;
+$user_name = $_SESSION['user_name'] ?? 'Guest Explorer';
+$user_role = $_SESSION['user_role'] ?? 'GUEST';
 
-$user_id = $_SESSION['user_id'];
-$user_name = $_SESSION['user_name'];
-$user_role = $_SESSION['user_role'];
-
-// 1. Set the current page (Fixed typo from 'dashbaord' to 'dashboard')
 $current_page = 'dashboard';
-
-// Initialize the shop link variable for the Hero/Grid logic
 $my_shop_link = "create_shop.php"; 
 
 $all_shops_query = mysqli_query($conn, "SELECT * FROM tblshop");
 
-// If the user is PERSONNEL, check if they already have an empid and an associated shop
+// Process only if they are logged in as Personnel management
 if ($user_role === 'PERSONNEL') {
-    $emp_query = mysqli_query($conn, "SELECT empid FROM tblpersonnel WHERE accid = '$user_id'");
-    $emp_data = mysqli_fetch_assoc($emp_query);
-
-    if ($emp_data) {
-        $empid = $emp_data['empid'];
-        $shop_check = mysqli_query($conn, "SELECT sid FROM tblshop WHERE empid = '$empid' LIMIT 1");
-        
-        if (mysqli_num_rows($shop_check) > 0) {
-            $my_shop_link = "manage_shop.php";
-        }
+    // Direct lookup in tblshop using the user's account ID (accid)
+    $shop_check = mysqli_query($conn, "SELECT sid FROM tblshop WHERE accid = '$user_id' LIMIT 1");
+    
+    if (mysqli_num_rows($shop_check) > 0) {
+        $my_shop_link = "manage_shop.php";
     }
 }
 ?>

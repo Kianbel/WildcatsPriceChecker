@@ -8,12 +8,12 @@ if (!isset($_GET['shop_id'])) {
     exit();
 }
 
-// 2. Sidebar Identity Variables (Simulating Student/General User)
-// These match the logic used in dashboard.php for user display
-$user_id = $_SESSION['user_id'] ?? null;
-$user_name = $_SESSION['user_name'] ?? 'Guest Student';
-$user_role = $_SESSION['user_role'] ?? 'STUDENT'; 
-$current_page = 'dashboard'; // Keeps Dashboard active in sidebar
+// 2. Sidebar Identity Variables (Supporting Open Guest Access)
+// These match the updated fallback logic used across dashboard.php and sidebar.php
+$user_id = $_SESSION['user_id'] ?? 0;
+$user_name = $_SESSION['user_name'] ?? 'Guest Explorer';
+$user_role = $_SESSION['user_role'] ?? 'GUEST'; 
+$current_page = 'dashboard'; // Keeps Dashboard highlight active in sidebar
 
 $shop_id = mysqli_real_escape_string($conn, $_GET['shop_id']);
 
@@ -27,6 +27,7 @@ if (!$shop) {
 }
 
 $sname = $shop['sname']; 
+$shop_desc = $shop['shop_description'] ?? 'No description available.';
 
 // 4. Fetch Items
 $items_query = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$shop_id' ORDER BY itemname ASC");
@@ -92,7 +93,7 @@ $items_query = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$shop_id'
         .main-content { flex: 1; display: flex; flex-direction: column; min-width: 0; }
         .hero { position: relative; padding: 5rem 5%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; overflow: hidden; }
         .welcome-heading { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 800; letter-spacing: -1px; z-index: 1; position: relative; }
-        .back-link { margin-top: 1rem; display: inline-flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.8); text-decoration: none; font-weight: 600; font-size: 0.9rem; z-index: 1; position: relative; transition: var(--transition); }
+        .back-link { margin-top: 1rem; display: inline-flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.8); text-decoration: none; font-weight: 600; font-size: 0.9rem; z-index: 1; position: relative; transition: var(--transition); margin-bottom: 0.5rem; }
         .back-link:hover { color: white; transform: translateX(-4px); }
 
         .content-body { padding: 4rem 5%; }
@@ -117,7 +118,9 @@ $items_query = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$shop_id'
         <header class="hero">
             <a href="dashboard.php" class="back-link"><i class="fas fa-arrow-left"></i> Back to Shops</a>
             <h1 class="welcome-heading"><?php echo htmlspecialchars($sname); ?></h1>
-            <p style="opacity: 0.9; margin-top: 0.5rem; font-weight: 500;">Price List & Availability</p>
+            <p style="opacity: 0.9; margin-top: 0.25rem; font-weight: 500; max-width: 600px;">
+                <?php echo htmlspecialchars($shop_desc); ?>
+            </p>
         </header>
 
         <section class="content-body">

@@ -19,24 +19,14 @@ $error = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $shop_name = mysqli_real_escape_string($conn, $_POST['shop_name']);
     
-    // Find the empid for this logged-in user
-    $getEmp = mysqli_query($conn, "SELECT empid FROM tblpersonnel WHERE accid = '$user_id'");
-    $empData = mysqli_fetch_assoc($getEmp);
-
-    if ($empData) {
-        $empid = $empData['empid'];
-
-        // Insert the shop
-        $sql = "INSERT INTO tblshop (sname, empid) VALUES ('$shop_name', '$empid')";
-        
-        if (mysqli_query($conn, $sql)) {
-            header("Location: manage_shop.php");
-            exit();
-        } else {
-            $error = "Database Error: " . mysqli_error($conn);
-        }
+    // Direct Insertion: Link the shop directly to the user's accid
+    $sql = "INSERT INTO tblshop (sname, accid) VALUES ('$shop_name', '$user_id')";
+    
+    if (mysqli_query($conn, $sql)) {
+        header("Location: manage_shop.php");
+        exit();
     } else {
-        $error = "Error: User is not registered as Personnel in the system.";
+        $error = "Database Error: " . mysqli_error($conn);
     }
 }
 ?>
@@ -77,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         .app-container { display: flex; min-height: 100vh; width: 100%; }
 
-        /* --- SHARED SIDEBAR STYLES (Exact Match) --- */
+        /* --- SHARED SIDEBAR STYLES --- */
         .sidebar {
             width: 280px; background: var(--sidebar-bg); padding: 2.5rem 1.5rem;
             position: sticky; top: 0; height: 100vh; display: flex;
@@ -144,7 +134,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         .btn-submit:hover { background: var(--primary-dark); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(211, 47, 47, 0.2); }
 
-        .alert-error { background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.9rem; font-weight: 600; }
+        .alert-error { background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.9rem; font-weight: 600; text-align: center; }
 
         @media (max-width: 1024px) {
             .sidebar { width: 80px; padding: 2rem 1rem; }

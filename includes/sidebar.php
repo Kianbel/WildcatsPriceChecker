@@ -2,11 +2,13 @@
     <div class="sidebar-inner">
         <div class="user-profile">
             <div class="avatar-container">
-                <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($user_name); ?>&background=800000&color=fff" alt="Avatar" class="user-avatar">
+                <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($user_name); ?>&background=<?php echo ($user_role === 'GUEST') ? '64748b' : '800000'; ?>&color=fff" alt="Avatar" class="user-avatar">
             </div>
             <div class="user-meta">
                 <span class="u-name"><?php echo htmlspecialchars($user_name); ?></span>
-                <span class="u-role"><?php echo htmlspecialchars($user_role); ?></span>
+                <span class="u-role" style="<?php echo ($user_role === 'GUEST') ? 'color: #94a3b8;' : ''; ?>">
+                    <?php echo htmlspecialchars($user_role); ?>
+                </span>
             </div>
         </div>
 
@@ -26,9 +28,15 @@
         </nav>
 
         <div class="sidebar-footer">
-            <a href="logout.php" class="logout-btn">
-                <i class="fas fa-right-from-bracket"></i> Logout
-            </a>
+            <?php if ($user_role === 'GUEST'): ?>
+                <a href="login.php" class="logout-btn" style="color: #fca5a5;">
+                    <i class="fas fa-right-to-bracket"></i> Log In Portal
+                </a>
+            <?php else: ?>
+                <a href="logout.php" class="logout-btn">
+                    <i class="fas fa-right-from-bracket"></i> Logout
+                </a>
+            <?php endif; ?>
         </div>
     </div>
 </aside>

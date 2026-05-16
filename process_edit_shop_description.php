@@ -2,6 +2,11 @@
 session_start();
 require_once 'includes/connect.php';
 
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'PERSONNEL') {
+    header("Location: login.php");
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user_id'])) {
     $sid = mysqli_real_escape_string($conn, $_POST['sid']);
     $description = mysqli_real_escape_string($conn, $_POST['shop_description']);
