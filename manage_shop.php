@@ -24,7 +24,27 @@ if (!$shop) {
 
 $sid = $shop['sid'];
 $sname = $shop['sname'];
-$itemsQuery = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$sid' ORDER BY itemname ASC");
+
+// --- PAGINATION LOGIC ---
+$limit = 10; // Items per page
+$page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($page < 1) { $page = 1; }
+$offset = ($page - 1) * $limit;
+
+// Count total items for this specific shop
+$countQuery = mysqli_query($conn, "SELECT COUNT(*) AS total FROM tblitem WHERE sid = '$sid'");
+$countRow = mysqli_fetch_assoc($countQuery);
+$total_items = $countRow['total'];
+$total_pages = ceil($total_items / $limit);
+
+// Adjust page tracker if bounds are broken manually
+if ($page > $total_pages && $total_pages > 0) {
+    $page = $total_pages;
+    $offset = ($page - 1) * $limit;
+}
+
+// Fetch Items using LIMIT and OFFSET bounds
+$itemsQuery = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$sid' ORDER BY itemname ASC LIMIT $limit OFFSET $offset");
 ?>
 
 <!DOCTYPE html>
@@ -104,6 +124,54 @@ $itemsQuery = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$sid' ORDE
         .action-btn { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; text-decoration: none; border: none; cursor: pointer; }
         .edit { background: #e0f2fe; color: #0369a1; }
         .delete { background: #fee2e2; color: #991b1b; }
+
+        /* --- PAGINATION STYLES --- */
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            background: #ffffff;
+            border-top: 1px solid #f1f5f9;
+        }
+        .pagination-info {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .pagination-nav {
+            display: flex;
+            gap: 6px;
+        }
+        .pagination-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 8px;
+            text-decoration: none;
+            color: var(--text-main);
+            background: var(--bg-main);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .pagination-link:hover {
+            background: rgba(213, 47, 47, 0.1);
+            color: var(--primary);
+        }
+        .pagination-link.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(211, 47, 47, 0.2);
+        }
+        .pagination-link.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+            background: #f1f5f9;
+        }
 
         /* --- MODALS --- */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; }
@@ -190,6 +258,33 @@ $itemsQuery = mysqli_query($conn, "SELECT * FROM tblitem WHERE sid = '$sid' ORDE
                         <?php endif; ?>
                     </tbody>
                 </table>
+
+                <?php if ($total_pages > 1): ?>
+                    <div class="pagination-container">
+                        <div class="pagination-info">
+                            Showing Page <strong><?php echo $page; ?></strong> of <strong><?php echo $total_pages; ?></strong>
+                        </div>
+                        <nav class="pagination-nav">
+                            <a href="?page=<?php echo $page - 1; ?>" 
+                               class="pagination-link <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+
+                            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                                <a href="?page=<?php echo $i; ?>" 
+                                   class="pagination-link <?php echo ($page == $i) ? 'active' : ''; ?>">
+                                    <?php echo $i; ?>
+                                </a>
+                            <?php endfor; ?>
+
+                            <a href="?page=<?php echo $page + 1; ?>" 
+                               class="pagination-link <?php echo ($page >= $total_pages) ? 'disabled' : ''; ?>">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </nav>
+                    </div>
+                <?php endif; ?>
+
             </div>
         </section>
     </main>

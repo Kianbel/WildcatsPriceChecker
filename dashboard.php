@@ -141,34 +141,37 @@ if ($user_role === 'PERSONNEL') {
             </div>
 
             <div class="shop-grid">
-    <?php 
-    if (mysqli_num_rows($all_shops_query) > 0) {
-        while ($shop = mysqli_fetch_assoc($all_shops_query)) { 
-            ?>
-            
-            <a href="view_shop.php?shop_id=<?php echo $shop['sid']; ?>" class="card-link">
-                <div class="modern-card">
-                    <div class="card-image" style="background-image: url('https://www.clipartmax.com/png/full/2-21084_store-clipart-shop-building-clipart.png');">
-                        <div class="card-tag">Shop</div>
-                    </div>
-                    <div class="card-content">
-                        <h3><?php echo htmlspecialchars($shop['sname']); ?></h3>
-                        <p><?php echo htmlspecialchars($shop['shop_description'] ?? 'No description available.'); ?></p>
-                        <div class="card-footer">
-                            <span>View Products</span>
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
+                <?php 
+                if (mysqli_num_rows($all_shops_query) > 0) {
+                    while ($shop = mysqli_fetch_assoc($all_shops_query)) { 
+                        $shop_desc = $shop['shop_description'];
+                        if (is_null($shop_desc) || trim($shop_desc) === '') {
+                            $shop_desc = 'No description available.';
+                        }
+                        ?>
+                        
+                        <a href="view_shop.php?shop_id=<?php echo $shop['sid']; ?>" class="card-link">
+                            <div class="modern-card">
+                                <div class="card-image" style="background-image: url('https://www.clipartmax.com/png/full/2-21084_store-clipart-shop-building-clipart.png');">
+                                    </div>
+                                <div class="card-content">
+                                    <h3><?php echo htmlspecialchars($shop['sname']); ?></h3>
+                                    <p><?php echo htmlspecialchars($shop_desc); ?></p>
+                                    <div class="card-footer">
+                                        <span>View Products</span>
+                                        <i class="fas fa-arrow-right"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
 
-        <?php 
-        } 
-    } else {
-        echo "<p>No shops found in the campus yet.</p>";
-    }
-    ?>
-</div>
+                    <?php 
+                    } 
+                } else {
+                    echo "<p>No shops found in the campus yet.</p>";
+                }
+                ?>
+            </div>
         </section>
     </main>
 </div>
