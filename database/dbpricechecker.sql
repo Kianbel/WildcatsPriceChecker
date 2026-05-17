@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 16, 2026 at 07:03 AM
+-- Generation Time: May 17, 2026 at 11:29 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -41,7 +41,28 @@ CREATE TABLE `tblitem` (
 INSERT INTO `tblitem` (`itemid`, `sid`, `itemname`, `price`) VALUES
 (8, 1, 'Pencil', 10.50),
 (9, 1, 'Short bondpaper', 1.00),
-(10, 1, 'Long bondpaper', 1.00);
+(10, 1, 'Long bondpaper', 1.00),
+(18, 1, 'Ballpen', 10.00),
+(19, 1, 'Short Brown Envelope', 10.00),
+(20, 1, 'Long Brown Envelope', 12.00),
+(21, 1, 'Short Plastic Envelope', 20.00),
+(22, 1, 'Long Plastic Envelope', 15.00),
+(23, 1, 'Short Folder', 10.00),
+(24, 1, 'Long Folder', 12.00),
+(25, 1, 'Expandable Folder', 20.00),
+(26, 1, 'Graphing Paper', 3.00),
+(27, 1, 'Glue 240g', 50.00),
+(28, 1, 'Glue Stick', 15.00),
+(29, 1, 'Masking Tape', 30.00),
+(30, 1, 'Scotch Tape', 30.00),
+(31, 1, 'Double-sided Tape', 60.00),
+(32, 1, 'Permanent Marker (Black)', 15.00),
+(33, 1, 'Permanent Marker (Blue)', 15.00),
+(34, 1, 'Permanent Marker (Red)', 15.00),
+(35, 1, 'Whiteboard Marker (Black)', 12.00),
+(36, 1, 'Whiteboard Marker (Red)', 12.00),
+(37, 1, 'Whiteboard Marker (Blue)', 12.00),
+(38, 4, 'Cheese Burger', 30.00);
 
 -- --------------------------------------------------------
 
@@ -123,7 +144,7 @@ ALTER TABLE `tbluser`
 -- AUTO_INCREMENT for table `tblitem`
 --
 ALTER TABLE `tblitem`
-  MODIFY `itemid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `itemid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `tblshop`
